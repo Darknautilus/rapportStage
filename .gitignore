@@ -168,3 +168,11 @@ pip-log.txt
 ##########
 
 build
+*.aux
+*.log
+*.pdf
+*.lof
+*.toc
+*.kilepr
+*~*
+*.backup
