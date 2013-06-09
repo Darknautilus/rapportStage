@@ -1,6 +1,6 @@
 \chapter{Une application de test à grande envergure}
 
-Mon stage débute le 8 avril. Une fois arrivé dans les locaux d'Orpalis à Colomiers, Loïc et Cédric me présentent l'entreprise et ses objectifs.
+Mon stage débute le 8 avril. Une fois arrivé dans les locaux d'ORPALIS à Colomiers, Loïc et Cédric me présentent l'entreprise et ses objectifs.
 C'est en comprenant l'envergure de GdPicture que je comprends la nécessité d'automatiser certains tests afin d'obtenir une visibilité en terme de fiabilité du SDK.
 
 \section{Objectifs}
@@ -10,7 +10,7 @@ Mon objectif principal est d'écrire une application qui, en utilisant GdPicture
 Il s'agira d'enregistrer les résultats des détections, afin d'émettre des rapports sur la quantité d'images lues et le nombre de codes-barres détectés.
 L'idée est d'effectuer une analyse complète de la base de test à chaque nouvelle version du moteur de détection du SDK, afin de comparer les résultats ; il faudra donc envisager un mécanisme de comparaison des différents rapports entre eux.
 
-Les tests sont une activité qui prend du temps et des ressources, c'est pour cela qu'une machine puissante tourne en permanence aux bureaux d'Orpalis.
+Les tests sont une activité qui prend du temps et des ressources, c'est pour cela qu'une machine puissante tourne en permanence aux bureaux d'ORPALIS.
 Cette machine contient un processeur capable d'effectuer plusieurs tâches en parallèle. Chaque tâche parallèle est exécutée sur ce que l'on appelle un fil d'exécution (en anglais, \og thread\fg ).
 Ainsi, pour exploiter pleinement les performances d'une telle machine, il est nécessaire de concevoir son application pour qu'elle utilise plusieurs threads. On dit de cette application qu'elle est multi-threadée.
 
@@ -19,6 +19,24 @@ Il est impensable de ne traiter les images qu'une à une, c'est pourquoi Loïc m
 
 \section{Développement}
 
+Le développement de cette application a duré près d'un mois, du 8 avril au 3 mai.
 
+\subsection{Le module de détection}
+
+La première chose à réaliser est le module de détection des codes-barres. L'application doit être capable d'adapter la détection au code-barres et employer le bon algorithme pour pouvoir le tester.
+Il existe quatre famille de codes-barres :
+
+\begin{description}
+ \item[1D] ils sont reconnaissables par leurs bandes verticales, ce sont les plus communs et il en existe plusieurs sortes.
+ \item[DataMatrix] se sont des codes-barres en deux dimensions permettant de stocker jusqu'à 2335 caractères sur 1 cm\^{2}.
+ \item[PDF417] des codes-barres en deux dimensions repérables notemment sur les billets d'avion.
+ \item[QRcode] permet de stocker 4296 caractères alphanumériques, repérable aux carrés servant à la détection d'erreurs.
+\end{description}
+
+GdPicture possède une fonction de détection pour chacune de ces quatre familles.
+
+\subsection{Création de rapports}
+
+\subsection{Présentation des résultats}
 
 \section{Bilan}
