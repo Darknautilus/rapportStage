@@ -45,6 +45,13 @@ En effet, lors de l'exécution d'un programme sur plusieurs threads, la consomma
 
 Une fois la détection faite, je vérifie combien de codes-barres ont été détectés dans l'image. Si des codes-barres ont été détectés, je les compare avec le fichier témoin de l'image. Le fichier témoin contient la valeur du code-barre contenu dans l'image. Cette valeur pourra être obtenue par un autre moteur de détection. Si l'image contient plusieurs codes-barres, alors chaque valeur sera inscrite sur une ligne du fichier, sans ordre particulier\footnote{Le fichier témoin doit avoir le même nom que l'image à laquelle il est associé. Si le fichier est mal nommé ou manquant, l'image sera ignorée du test.}. Pour chaque image, je parcours donc le fichier témoin à la recherche de la valeur détectée. Si la valeur est trouvée, le code-barres est marqué comme détecté et correct. Si la valeur n'est pas trouvée, le code-barres est marqué comme détecté mais incorrect.
 
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.6]{images/projet1DetectionWindow.png}
+\caption{Une détection en cours}
+\end{center}
+\end{figure}
+
 \subsection{Création de rapports}
 
 Chaque passage sur la base de tests va générer un rapport. L'un des objectifs de l'application est de pouvoir comparer plusieurs rapports. Le cas typique d'utilisation sera la réalisation d'un nouveau rapport à chaque nouvelle version du moteur de détection. Il est donc important de pouvoir stocker ces rapports afin de pouvoir les comparer au moment voulu. Le meilleur moyen est d'utiliser des fichiers.
