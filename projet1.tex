@@ -28,13 +28,13 @@ Il existe quatre famille de codes-barres :
 
 \begin{description}
  \item[1D] ils sont reconnaissables par leurs bandes verticales, ce sont les plus communs et il en existe plusieurs sortes.
- \item[DataMatrix] se sont des codes-barres en deux dimensions permettant de stocker jusqu'à 2335 caractères sur 1 cm\^{2}.
+ \item[DataMatrix] se sont des codes-barres en deux dimensions permettant de stocker jusqu'à 2335 caractères sur 1 cm\up{2}.
  \item[PDF417] des codes-barres en deux dimensions repérables notamment sur les billets d'avion.
  \item[QRcode] permet de stocker 4296 caractères alphanumériques, repérable aux carrés servant à la détection d'erreurs.
 \end{description}
 
 GdPicture possède une fonction de détection pour chacune de ces quatre familles. Dans le fichier de configuration, je peux définir quelle fonction utiliser pour un répertoire donné, ainsi toutes les images de ce répertoire seront analysées par cette seule fonction. Je peux sinon choisir d'utiliser les quatre fonctions. L'intérêt d'une telle démarche est que pour certaines images, je suis sûr qu'elles seront détectées par une fonction en particulier. Les résultats d'une détection PDF417 sur des QRcodes ne seraient pas significatifs, aussi ai-je intérêt à spécifier l'utilisation de la fonction de détection des QRcodes. Je pourrai donc observer l'évolution de la détection QRcode pour chaque image.\\
-A l'inverse, il peut être utile de ne spécifier l'utilisation d'aucune fonction en particulier. Dans le cas d'image contenant des codes-barres de types différents, cela est primordial. Dans tous les cas, ces instructions doivent être écrites dans le fichier de configuration, et tout répertoire non référencé sera ignoré. Il est donc nécessaire de passer du temps à bien organiser le jeu de test et de configurer l'application en conséquence.
+A l'inverse, il peut être utile de ne spécifier l'utilisation d'aucune fonction en particulier. Dans le cas d'image contenant des codes-barres de types différents, cela est primordial. Dans tous les cas, ces instructions doivent être écrites dans le fichier de configuration, et tout répertoire non référencé sera ignoré. Il est donc nécessaire de passer du temps à bien organiser le jeu de test et de configurer l'application en conséquence\footnote{Pour plus de détails, consulter l'annexe \ref{configFile}}.
 
 \paragraph{}
 
