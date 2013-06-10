@@ -7,9 +7,18 @@
 \usepackage{amssymb}
 \usepackage{makeidx}
 \usepackage{graphicx}
+\usepackage{listings}
 \author{Aurélien Bertron}
 \date{8 avril - 14 juin 2013}
 \title{Création d'une application de tests de non-régression pour un SDK de reconnaissance de codes-barres}
+
+\lstset{
+language=Java,
+numbers=left,
+breaklines=true
+}
+
+
 \begin{document}
 
 
@@ -30,5 +39,9 @@
 
 \include{conclusion}
 \include{glossaire}
+
+\appendix
+\part*{Annexes à l'application de tests de non-régression}
+\include{annexeProjet1}
 
 \end{document}
