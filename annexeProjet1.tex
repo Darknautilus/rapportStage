@@ -1,18 +1,21 @@
 \chapter{Comment organiser la base de tests et configurer l'application ?}
 \label{configFile}
-La configuration de l'application dépend grandement de l'architecture de la base de tests.
+La configuration de l'application dépend grandement de l'architecture de la base de tests. Les images sont placées dans des répertoires correspondant idéalement à un type de code-barres. Le fichier de configuration est constitué de plusieurs lignes constituant chacune une instruction. Chaque instruction contient deux informations : le nom (ou une partie du nom) du répertoire appelé catégorie et le type de détection. On a donc le modèle suivant :
+\\\verb|<catégorie> <type détection>|\\
+Les deux informations ne doivent pas contenir d'espace et doivent être séparées par une espace. On peut choisir de référencer plusieurs répertoires par la même catégorie, il faudra dans ce cas que le nom des répertoires en question commencent par cette catégorie.
 
+Pour chaque catégorie, on associe donc un type de détection qui indiquera à l'application quel algorithme de détection utiliser :
+\begin{itemize}
+ \item \og 1d \fg{} pour un code-barres 1D
+ \item \og 2ddm \fg{} pour un code-barres DataMatrix
+ \item \og 2dpdf \fg{} pour un code-barres PDF417
+ \item \og qr \fg{} pour un QRcode
+ \item \og all \fg{} pour une détection de tous les codes-barres précédents
+\end{itemize}
 
+Il est conseillé de limiter le nombre d'instructions en regroupant le plus possible les images. Vous obtiendrez ainsi une base de tests simple et claire. N'oubliez pas de créer pour chaque image un fichier du même nom (avec une extension .txt par exemple) qui servira de témoin. Même si l'image ne contient pas de code-barres (test de faux positifs) ou si la valeur de ce(s) codes-barres est inconnue, il faut au moins créer le fichier témoin. Il suffit ensuite de remplir ce fichier témoin à raison d'une valeur de code-barres par ligne.
 
-
-
-
-
-
-
-
-
-
+Si ces conseils sont suivis, vous ne devriez pas rencontrer d'erreur lors du test de vos images.
 
 \chapter{Comment un fichier est-il traité par l'application ?}
 
