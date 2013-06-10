@@ -29,7 +29,7 @@ Il existe quatre famille de codes-barres :
 \begin{description}
  \item[1D] ils sont reconnaissables par leurs bandes verticales, ce sont les plus communs et il en existe plusieurs sortes.
  \item[DataMatrix] se sont des codes-barres en deux dimensions permettant de stocker jusqu'à 2335 caractères sur 1 cm\^{2}.
- \item[PDF417] des codes-barres en deux dimensions repérables notemment sur les billets d'avion.
+ \item[PDF417] des codes-barres en deux dimensions repérables notamment sur les billets d'avion.
  \item[QRcode] permet de stocker 4296 caractères alphanumériques, repérable aux carrés servant à la détection d'erreurs.
 \end{description}
 
@@ -48,6 +48,12 @@ Une fois la détection faite, je vérifie combien de codes-barres ont été dét
 \subsection{Création de rapports}
 
 Chaque passage sur la base de tests va générer un rapport. L'un des objectifs de l'application est de pouvoir comparer plusieurs rapports. Le cas typique d'utilisation sera la réalisation d'un nouveau rapport à chaque nouvelle version du moteur de détection. Il est donc important de pouvoir stocker ces rapports afin de pouvoir les comparer au moment voulu. Le meilleur moyen est d'utiliser des fichiers.
+
+Pour pouvoir structurer l'information dans un fichier, il faut utiliser une norme de notation. C'est à ça que servent les langages comme XML et ses dérivés. J'avais dans un premier temps commencé à utiliser XML mais très vite j'ai été limité par les contraintes de mise en forme du langage. Je me suis donc tourné vers un format plus récent : JSON. Historiquement dédié au web, JSON a l'avantage de disposer d'une syntaxe simple et souple.
+
+J'ai pu trouver une bibliothèque .NET gérant la traduction en JSON\footnote{Disponible ici : http://james.newtonking.com/projects/json-net.aspx}. L'intérêt de cette bibliothèque est qu'elle permet de faire abstraction de la constitution d'un objet pour le traduire\footnote{On dit de cet objet qu'il est \og parsé \fg{} }. Il me suffit de donner un objet à une fonction de parsage pour qu'elle me renvoie le résultat en JSON. Il ne me reste donc qu'à écrire ce résultat dans le fichier.
+
+En appliquant cette opération à toutes les images, on obtient donc un fichier contenant l'ensemble des informations de la détection pour toute la base de tests.
 
 \subsection{Présentation des résultats}
 

@@ -22,4 +22,8 @@ Cette liste n'est pas exhaustive, et toutes les fonctionnalités ne sont pas dis
 
 \section{Utilisation}
 
-A compléter.
+Afin d'utiliser GdPicture, il faut d'abord enregistrer une clé de licence. Il s'agit d'une mesure de protection empêchant ceux qui n'auraient pas acheté le SDK de l'utiliser. L'enregistrement se fait avec cette instruction :
+
+\verb|new GdPicture9.LicenseManager().lm.RegisterKEY("ma_cle");|
+
+Dans l'application j'utilise un objet de type \verb|GdPictureImaging| qui va me servir à appeler plusieurs fonctions de traitement d'images, dont la détection de codes-barres.
