@@ -36,10 +36,11 @@ Il existe quatre famille de codes-barres :
 GdPicture possède une fonction de détection pour chacune de ces quatre familles. Dans le fichier de configuration, je peux définir quelle fonction utiliser pour un répertoire donné, ainsi toutes les images de ce répertoire seront analysées par cette seule fonction. Je peux sinon choisir d'utiliser les quatre fonctions. L'intérêt d'une telle démarche est que pour certaines images, je suis sûr qu'elles seront détectées par une fonction en particulier. Les résultats d'une détection PDF417 sur des QRcodes ne seraient pas significatifs, aussi ai-je intérêt à spécifier l'utilisation de la fonction de détection des QRcodes. Je pourrai donc observer l'évolution de la détection QRcode pour chaque image.\\
 A l'inverse, il peut être utile de ne spécifier l'utilisation d'aucune fonction en particulier. Dans le cas d'image contenant des codes-barres de types différents, cela est primordial. Dans tous les cas, ces instructions doivent être écrites dans le fichier de configuration, et tout répertoire non référencé sera ignoré. Il est donc nécessaire de passer du temps à bien organiser le jeu de test et de configurer l'application en conséquence\footnote{Pour plus de détails, consulter l'annexe \ref{configFile}}.
 
-\paragraph{}
+\paragraph*{}
 
 La méthode de détection de GdPicture retourne une valeur qui indique si une erreur est survenue. Je n'ai pas eu à traiter de cas d'erreurs avec ces images dans la mesure ou il s'agit d'un jeu de test simple et éprouvé à plusieurs reprises.
 
+\label{ProblemeDetectionGdPicture}
 GdPicture m'a tout de même donné du fil à retordre lorsque je me suis aperçu que lors d'une détection multi-threadée sur des QRcodes, les résultats variaient d'une passe à l'autre. La raison était que la fonction de détection retournait de manière imprévisible une erreur générique\footnote{Une erreur générique est le type d'erreur retourné lorsque l'on n'a pas pu identifier l'origine de l'erreur.}. La raison de cette erreur se situait à la fois dans GdPicture et dans mon application.\\
 En effet, lors de l'exécution d'un programme sur plusieurs threads, la consommation de mémoire vive est proportionnelle au nombre de threads utilisés. Dans mon cas, chaque thread charge une image en mémoire, la traite, et effectue plusieurs autres opérations. Lorsque l'application se lance sur 4 threads, on ne constate aucun problème, mais lorsque le nombre de threads est augmenté à 16, 32 ou 64, la consommation de mémoire augmente rapidement. Ainsi on arrive à saturation et le système d'exploitation n'est plus en mesure d'accorder plus de mémoire à l'application. Pour éviter cette situation, le programme qui demande des accès en mémoire doit vérifier qu'assez d'espace est disponible pour lui or, une erreur dans GdPicture faisait que ce n'était pas le cas. Ainsi, la fonction de détection, essayant d'allouer de l'espace mémoire, se retrouve confrontée au problème de saturation et retourne une erreur générique, d'où les différences dans les résultats de détection, modulés au gré de la saturation mémoire.
 
@@ -64,9 +65,62 @@ En appliquant cette opération à toutes les images, on obtient donc un fichier 
 
 \subsection{Présentation des résultats}
 
-A tout moment, il sera possible de comparer les rapports existants. Pour plus de commodité tous les rapports doivent être placés dans le même répertoire. Avec le chemin de ce répertoire, l'application doit être capable de retrouver les informations de chaque rapport et de les classer. Il est ensuite possible de choisir un rapport comme référence et d'afficher les différences de détection dans chaque rapport relativement à celui-ci. On étudie ici le taux de détection, c'est à dire le nombre de codes-barres corrects par rapport au nombre total.
+A tout moment, il est possible de comparer les rapports existants. Pour plus de commodité tous les rapports doivent être placés dans le même répertoire. Avec le chemin de ce répertoire, l'application doit être capable de retrouver les informations de chaque rapport et de les classer. Il est ensuite possible de choisir un rapport comme référence et d'afficher les différences de détection dans chaque rapport relativement à celui-ci. On étudie ici le taux de détection, c'est à dire le nombre de codes-barres corrects par rapport au nombre total.
 
+\paragraph*{}
 
+Les résultats sont donc présentés sur quatre niveaux. Le premier niveau représente les rapports qui ont été détectés dans le répertoire spécifié. Ils sont classés par date et le plus récent est automatiquement défini comme référence. Il est possible de définir un rapport particulier comme référence. On affiche quelques informations propres à chaque rapport comme la date, l'heure, la version de GdPicture et le nombre de fichiers.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{images/projet1RapportWindow.png}
+\caption{La liste des rapports détectés}
+\end{center}
+\end{figure}
+
+\paragraph*{}
+
+Le second niveau de résultats présente les différences de taux de détection entre la référence et les autres rapports. Ces différences sont détaillées pour chaque type de détection. C'est à ce stade que l'on se rend compte le mieux des problèmes de détection qui peuvent survenir comme ceux expliqués ci-dessus.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.6]{images/projet1RapportWindow2.png}
+\caption{Comparaison des taux de détection entre les rapports}
+\end{center}
+\end{figure}
+
+\paragraph*{}
+
+Le troisième niveau présente l'état de détection de chaque fichier d'un rapport pour le type de détection donné. Le niveau précédent propose des zones cliquables, on peut donc choisir d'afficher les détails pour un rapport (en colonne) et un type de détection (en ligne). Cela permet de rechercher quel fichier a pu causer les différences de détection constatées au niveau 2.
+
+Trois cas sont possibles :
+\begin{description}
+\item[OK :] Le code-barres a été détecté et est correct
+\item[Undetected :] Aucun code-barres n'a été détecté
+\item[Incorrect :] Un code-barres a été détecté mais il ne correspond pas à la valeur de contrôle.
+\end{description}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.6]{images/projet1RapportWindow3.png}
+\caption{Etat de détection détaillé par fichier}
+\end{center}
+\end{figure}
+
+Il est possible de double-cliquer sur une ligne pour accéder à l'historique du fichier : c'est le quatrième niveau.
+
+\paragraph*{}
+
+Le quatrième niveau présente un historique de détection du fichier image sur les différents rapports. Il détaille le nombre de codes-barres détectés pour chaque type de détection, le nombre de codes-barres corrects et l'état de détection retourné par GdPicture. Lorsqu'il n'est pas à \og OK \fg{}, cela est sûrement la cause de variations du taux de détection.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.6]{images/projet1RapportWindow4.png}
+\caption{Etat de détection détaillé pour un fichier}
+\end{center}
+\end{figure}
+
+\pagebreak
 \section{Bilan}
 
 L'enjeu de cette application était de donner à ORPALIS un moyen de surveiller simplement les différences de détection entre les différentes versions du moteur. Une fois le jeu de test organisé et l'application configurée, il est très rapide de lancer une détection sur la base de test, d'enregistrer le rapport avec ceux existants et de comparer les résultats. La classification par type de détection, puis par fichier permet de donner un maximum d'informations tout en garantissant des résultats organisés et une analyse pertinente.
