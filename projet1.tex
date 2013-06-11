@@ -19,7 +19,7 @@ Il est impensable de ne traiter les images qu'une à une, c'est pourquoi Loïc m
 
 \section{Développement}
 
-Le développement de cette application a duré près d'un mois, du 8 avril au 3 mai.
+Le développement de cette application a duré près d'un mois, du 8 avril au 3 mai. J'ai utilisé l'environnement de développement Visual Studio 2012.
 
 \subsection{Le module de détection}
 
@@ -27,20 +27,17 @@ La première chose à réaliser est le module de détection des codes-barres. L'
 Il existe quatre famille de codes-barres :
 
 \begin{description}
- \item[1D] ils sont reconnaissables par leurs bandes verticales, ce sont les plus communs et il en existe plusieurs sortes.
- \item[DataMatrix] se sont des codes-barres en deux dimensions permettant de stocker jusqu'à 2335 caractères sur 1 cm\up{2}.
- \item[PDF417] des codes-barres en deux dimensions repérables notamment sur les billets d'avion.
- \item[QRcode] permet de stocker 4296 caractères alphanumériques, repérable aux carrés servant à la détection d'erreurs.
+\item[1D] ils sont reconnaissables par leurs bandes verticales, ce sont les plus communs et il en existe plusieurs sortes.
+\item[DataMatrix] se sont des codes-barres en deux dimensions permettant de stocker jusqu'à 2335 caractères sur 1 cm\up{2}.
+\item[PDF417] des codes-barres en deux dimensions repérables notamment sur les billets d'avion.
+\item[QRcode] permet de stocker 4296 caractères alphanumériques, repérable aux carrés servant à la détection d'erreurs.
 \end{description}
 
 GdPicture possède une fonction de détection pour chacune de ces quatre familles. Dans le fichier de configuration, je peux définir quelle fonction utiliser pour un répertoire donné, ainsi toutes les images de ce répertoire seront analysées par cette seule fonction. Je peux sinon choisir d'utiliser les quatre fonctions. L'intérêt d'une telle démarche est que pour certaines images, je suis sûr qu'elles seront détectées par une fonction en particulier. Les résultats d'une détection PDF417 sur des QRcodes ne seraient pas significatifs, aussi ai-je intérêt à spécifier l'utilisation de la fonction de détection des QRcodes. Je pourrai donc observer l'évolution de la détection QRcode pour chaque image.\\
 A l'inverse, il peut être utile de ne spécifier l'utilisation d'aucune fonction en particulier. Dans le cas d'image contenant des codes-barres de types différents, cela est primordial. Dans tous les cas, ces instructions doivent être écrites dans le fichier de configuration, et tout répertoire non référencé sera ignoré. Il est donc nécessaire de passer du temps à bien organiser le jeu de test et de configurer l'application en conséquence\footnote{Pour plus de détails, consulter l'annexe \ref{configFile}}.
 
-\paragraph*{}
-
 La méthode de détection de GdPicture retourne une valeur qui indique si une erreur est survenue. Je n'ai pas eu à traiter de cas d'erreurs avec ces images dans la mesure ou il s'agit d'un jeu de test simple et éprouvé à plusieurs reprises.
 
-\label{ProblemeDetectionGdPicture}
 GdPicture m'a tout de même donné du fil à retordre lorsque je me suis aperçu que lors d'une détection multi-threadée sur des QRcodes, les résultats variaient d'une passe à l'autre. La raison était que la fonction de détection retournait de manière imprévisible une erreur générique\footnote{Une erreur générique est le type d'erreur retourné lorsque l'on n'a pas pu identifier l'origine de l'erreur.}. La raison de cette erreur se situait à la fois dans GdPicture et dans mon application.\\
 En effet, lors de l'exécution d'un programme sur plusieurs threads, la consommation de mémoire vive est proportionnelle au nombre de threads utilisés. Dans mon cas, chaque thread charge une image en mémoire, la traite, et effectue plusieurs autres opérations. Lorsque l'application se lance sur 4 threads, on ne constate aucun problème, mais lorsque le nombre de threads est augmenté à 16, 32 ou 64, la consommation de mémoire augmente rapidement. Ainsi on arrive à saturation et le système d'exploitation n'est plus en mesure d'accorder plus de mémoire à l'application. Pour éviter cette situation, le programme qui demande des accès en mémoire doit vérifier qu'assez d'espace est disponible pour lui or, une erreur dans GdPicture faisait que ce n'était pas le cas. Ainsi, la fonction de détection, essayant d'allouer de l'espace mémoire, se retrouve confrontée au problème de saturation et retourne une erreur générique, d'où les différences dans les résultats de détection, modulés au gré de la saturation mémoire.
 
@@ -48,9 +45,9 @@ Une fois la détection faite, je vérifie combien de codes-barres ont été dét
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.6]{images/projet1DetectionWindow.png}
-\caption{Une détection en cours}
+\includegraphics[scale=0.5]{images/projet1DetectionWindow.png}
 \end{center}
+\caption{Une détection en cours}
 \end{figure}
 
 \subsection{Création de rapports}
@@ -67,29 +64,41 @@ En appliquant cette opération à toutes les images, on obtient donc un fichier 
 
 A tout moment, il est possible de comparer les rapports existants. Pour plus de commodité tous les rapports doivent être placés dans le même répertoire. Avec le chemin de ce répertoire, l'application doit être capable de retrouver les informations de chaque rapport et de les classer. Il est ensuite possible de choisir un rapport comme référence et d'afficher les différences de détection dans chaque rapport relativement à celui-ci. On étudie ici le taux de détection, c'est à dire le nombre de codes-barres corrects par rapport au nombre total.
 
-\paragraph*{}
+Pour construire l'interface graphique, j'utilise les outils intégrés à Visual Studio. La couche logicielle gérant les graphismes est WPF\footnote{Windows Presentation Foundation, apparue avec la version 3.0 du framework .NET}. Elle permet de gérer la disposition des éléments graphiques et les événements (actions de l'utilisateur). WPF a pour principe de séparer l'interface statique (avant-plan de l'application) avec la gestion dynamique de la fenêtre (arrière-plan) en utilisant deux langages :
+\begin{itemize}
+\item Le XAML pour l'avant-plan. Il s'agit d'un dérivé de XML qui permet une manipulation aisée des éléments grâce à l'arborescence.
+\item Le C\# pour l'arrière-plan. On profite ainsi d'une interface avec le reste de l'application.
+\end{itemize}
 
-Les résultats sont donc présentés sur quatre niveaux. Le premier niveau représente les rapports qui ont été détectés dans le répertoire spécifié. Ils sont classés par date et le plus récent est automatiquement défini comme référence. Il est possible de définir un rapport particulier comme référence. On affiche quelques informations propres à chaque rapport comme la date, l'heure, la version de GdPicture et le nombre de fichiers.
+En pratique, j'ai souvent été amené à utiliser le C\# pour manipuler les éléments graphiques, notamment lorsque je devais en générer automatiquement.
+
+Les résultats des différents rapports sont présentés sur quatre niveaux :
+
+\clearpage
+
+Le premier niveau représente les rapports qui ont été détectés dans le répertoire spécifié. Ils sont classés par date et le plus récent est automatiquement défini comme référence. Il est possible de définir un rapport particulier comme référence. On affiche quelques informations propres à chaque rapport comme la date, l'heure, la version de GdPicture et le nombre de fichiers.
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.5]{images/projet1RapportWindow.png}
-\caption{La liste des rapports détectés}
+\includegraphics[scale=0.5]{images/projet1RapportWindow.png}...
 \end{center}
+\caption{La liste des rapports détectés}
+\label{niveau1}
 \end{figure}
 
-\paragraph*{}
+\clearpage
 
-Le second niveau de résultats présente les différences de taux de détection entre la référence et les autres rapports. Ces différences sont détaillées pour chaque type de détection. C'est à ce stade que l'on se rend compte le mieux des problèmes de détection qui peuvent survenir comme ceux expliqués ci-dessus.
+Le second niveau de résultats présente les différences de taux de détection entre la référence et les autres rapports. Ces différences sont détaillées pour chaque type de détection. C'est à ce stade que l'on se rend compte le mieux des problèmes de détection qui peuvent survenir comme ceux expliqués plus haut.
 
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.6]{images/projet1RapportWindow2.png}
-\caption{Comparaison des taux de détection entre les rapports}
 \end{center}
+\caption{Comparaison des taux de détection entre les rapports}
+\label{niveau2}
 \end{figure}
 
-\paragraph*{}
+\clearpage
 
 Le troisième niveau présente l'état de détection de chaque fichier d'un rapport pour le type de détection donné. Le niveau précédent propose des zones cliquables, on peut donc choisir d'afficher les détails pour un rapport (en colonne) et un type de détection (en ligne). Cela permet de rechercher quel fichier a pu causer les différences de détection constatées au niveau 2.
 
@@ -103,26 +112,34 @@ Trois cas sont possibles :
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.6]{images/projet1RapportWindow3.png}
-\caption{Etat de détection détaillé par fichier}
 \end{center}
+\caption{Etat de détection détaillé par fichier}
+\label{niveau3}
 \end{figure}
 
 Il est possible de double-cliquer sur une ligne pour accéder à l'historique du fichier : c'est le quatrième niveau.
 
-\paragraph*{}
+\clearpage
 
-Le quatrième niveau présente un historique de détection du fichier image sur les différents rapports. Il détaille le nombre de codes-barres détectés pour chaque type de détection, le nombre de codes-barres corrects et l'état de détection retourné par GdPicture. Lorsqu'il n'est pas à \og OK \fg{}, cela est sûrement la cause de variations du taux de détection.
+Le quatrième niveau présente un historique de détection du fichier image sur les différents rapports. Il détaille le nombre de codes-barres détectés pour chaque type de détection, le nombre de codes-barres corrects et le statut de détection retourné par GdPicture. Lorsque le statut de détection est différent de \og OK \fg{}, cela est sûrement la cause de variations du taux de détection.
 
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.6]{images/projet1RapportWindow4.png}
-\caption{Etat de détection détaillé pour un fichier}
 \end{center}
+\caption{Etat de détection détaillé pour un fichier}
+\label{niveau4}
 \end{figure}
 
-\pagebreak
+\clearpage
 \section{Bilan}
 
-L'enjeu de cette application était de donner à ORPALIS un moyen de surveiller simplement les différences de détection entre les différentes versions du moteur. Une fois le jeu de test organisé et l'application configurée, il est très rapide de lancer une détection sur la base de test, d'enregistrer le rapport avec ceux existants et de comparer les résultats. La classification par type de détection, puis par fichier permet de donner un maximum d'informations tout en garantissant des résultats organisés et une analyse pertinente.
+L'enjeu de cette application était de fournir à ORPALIS un moyen de surveiller simplement les différences de détection entre les différentes versions du moteur. Une fois le jeu de test organisé et l'application configurée, il est très rapide de lancer une détection sur la base de test, d'enregistrer le rapport avec ceux existants et de comparer les résultats. La classification par type de détection, puis par fichier permet de donner un maximum d'informations tout en garantissant des résultats organisés et une analyse pertinente.
 
 Ce projet aura été l'occasion de découvrir le langage C\#, l'environnement .NET et la spécification graphique WPF. L'utilisation des outils Microsoft assure la meilleure intégration de l'application dans Windows, permettant ainsi d'obtenir une application performante sans un gaspillage trop important de ressources. Le modèle d'application multithreadée de Loïc m'a permis de faire abstraction de cette contrainte dans la découverte de mon espace de travail. J'ai dû tout de même m'y confronter et construire mon application à l'intérieur. C'est en analysant le code source donné et en y greffant le mien que j'ai pu comprendre le fonctionnement du multi-threading en C\#.
+
+La création de l'interface graphique a pris beaucoup de temps. WPF\footnote{Windows Presentation Foundation} est une technologie 100\% Windows qui nécessite un temps d'adaptation. Ma principale difficulté a été de construire des interfaces complexes dans la présentation des résultats, notemment au niveau 2.
+
+L'utilisation des ressources a été un point central d'optimisation. N'étant pas familier avec les outils Microsoft, j'ai dû m'adapter à des techniques de programmation qui m'étaient étrangères. Je dois avouer que je n'avais jamais eu à m'intéresser à la quantité de ressources qu'utilisait mon application, alors qu'il s'agit d'une préoccupation importante.
+
+Le point positif est que j'ai pu profiter d'une part de l'expérience de Loïc et Cédric, d'autre part de la grande quantité d'informations disponibles sur les sites de Microsoft, les forums et autres communautés de développeurs .NET.
