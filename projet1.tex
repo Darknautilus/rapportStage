@@ -43,6 +43,8 @@ En effet, lors de l'exécution d'un programme sur plusieurs threads, la consomma
 
 Une fois la détection faite, je vérifie combien de codes-barres ont été détectés dans l'image. Si des codes-barres ont été détectés, je les compare avec le fichier témoin de l'image. Le fichier témoin contient la valeur du code-barre contenu dans l'image. Cette valeur pourra être obtenue par un autre moteur de détection. Si l'image contient plusieurs codes-barres, alors chaque valeur sera inscrite sur une ligne du fichier, sans ordre particulier\footnote{Le fichier témoin doit avoir le même nom que l'image à laquelle il est associé. Si le fichier est mal nommé ou manquant, l'image sera ignorée du test.}. Pour chaque image, je parcours donc le fichier témoin à la recherche de la valeur détectée. Si la valeur est trouvée, le code-barres est marqué comme détecté et correct. Si la valeur n'est pas trouvée, le code-barres est marqué comme détecté mais incorrect.
 
+Pour plus de détails sur la détection, vous pouvez consulter l'annexe \ref{detectionImage}.
+
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.5]{images/projet1DetectionWindow.png}
@@ -138,7 +140,7 @@ L'enjeu de cette application était de fournir à ORPALIS un moyen de surveiller
 
 Ce projet aura été l'occasion de découvrir le langage C\#, l'environnement .NET et la spécification graphique WPF. L'utilisation des outils Microsoft assure la meilleure intégration de l'application dans Windows, permettant ainsi d'obtenir une application performante sans un gaspillage trop important de ressources. Le modèle d'application multithreadée de Loïc m'a permis de faire abstraction de cette contrainte dans la découverte de mon espace de travail. J'ai dû tout de même m'y confronter et construire mon application à l'intérieur. C'est en analysant le code source donné et en y greffant le mien que j'ai pu comprendre le fonctionnement du multi-threading en C\#.
 
-La création de l'interface graphique a pris beaucoup de temps. WPF\footnote{Windows Presentation Foundation} est une technologie 100\% Windows qui nécessite un temps d'adaptation. Ma principale difficulté a été de construire des interfaces complexes dans la présentation des résultats, notemment au niveau 2.
+La création de l'interface graphique a pris beaucoup de temps. WPF est une technologie créée spécifiquement pour Windows qui nécessite un temps d'adaptation. Ma principale difficulté a été de construire des interfaces complexes dans la présentation des résultats, notemment au niveau 2.
 
 L'utilisation des ressources a été un point central d'optimisation. N'étant pas familier avec les outils Microsoft, j'ai dû m'adapter à des techniques de programmation qui m'étaient étrangères. Je dois avouer que je n'avais jamais eu à m'intéresser à la quantité de ressources qu'utilisait mon application, alors qu'il s'agit d'une préoccupation importante.
 

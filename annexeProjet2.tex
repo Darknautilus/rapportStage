@@ -1,0 +1,18 @@
+\chapter{Gestion du clavier et de la souris dans une application non-fenêtrée}
+\label{hook}
+
+Cette annexe a pour but de présenter ce qui m'a posé le plus de problèmes lors de la réalisation du lecteur virtuel de codes-barres. La gestion des événements clavier et souris est intégrée à WPF et s'avère très pratique pour intercepter les événements dans une fenêtre. Le problème est tout autre lorsqu'il s'agit d'intercepter des événements hors d'une fenêtre. Dans le cadre de mon application, les événements se déroulent à 90\% hors d'une fenêtre, puisque l'application se lance dans le systray. C'est pourquoi j'ai dû trouver une solution pour pallier à cette carence de WPF.
+
+On peut d'ailleurs expliquer ce manque par une volonté de Microsoft d'empêcher les applications d'intéragir avec le système à un niveau trop bas. En d'autres termes, les applications doivent se tenir à leur place. Cela peut être aussi une contrainte de conception, puisque le système Windows repose sur de vieilles bases datant du début du projet. Ainsi, le seul moyen d'avoir une interactivité complexe avec le système est de faire appel à l'API bas niveau de Windows : Win32.
+
+Le Framework .NET fonctionne en code dit \og managé \fg{}, c'est à dire que le code écrit par le programmeur ne sera pas directement compilé en langage machine, il sera compilé puis interprété par une machine virtuelle qui effectue des vérifications et des optimisations sur le code. Le même concept existe pour le langage Java qui s'exécute à travers la JVM\footnote{Java Virtual Machine}.
+
+L'API Win32 ne fonctionne pas en code managé, et cela pose une limite majeure de conception avec .NET. Toutefois, des outils existent pour appeler des fonctions Win32 dans du code C\#. L'un de ces outils que j'ai pu utiliser est P/Invoke. Il permet d'inclure une DLL système contenant du code non-managé et d'assurer l'interface avec le code managé. Voici un exemple d'utilisation :
+
+[CODE]
+
+Je me suis rendu compte au fil de mes recherches que le seul moyen d'intercepter un événement souris ou clavier à l'extérieur d'une fenêtre était de mettre en place un mécanisme bas niveau appelé \og Hook \fg{}. Un hook (crochet) permet de surveiller les messages transitant des périphériques au système et de les faire bifurquer par l'application. L'application peut surveiller ces messages et soit les laisser passer soit les traiter tout en prenant soin de les relâcher dans leur direction initiale. Comme dit précédemment, le hook est un mécanisme de bas niveau qui se trouve dans une DLL Win32. C'est là que P/Invoke entre en jeu.
+
+Une fois les bonnes fonctions intégrées au projet, il faut traduire les messages qu'elles renvoient par des événements C\#. Enfin, il suffit d'affecter des traitements à ces événements pour obtenir l'intéraction tant espérée. Dans le cadre de mon projet, j'avais effectué ce travail à hauteur de 40\% avant de trouver une bibliothèque C\# basée sur le même principe, mais aussi plus propre et plus complète.
+
+La plus grande difficulté a été de comprendre le fonctionnement du système de hooks. L'intéraction entre l'API bas niveau et le code managé représente un défi majeur de toute application complexe, et est la preuve que sous une apparence simple et conviviale peut se cacher une véritable usine à gaz.
