@@ -8,16 +8,27 @@
 \usepackage{makeidx}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
 
 \author{Aurélien Bertron}
 \date{8 avril - 14 juin 2013}
-\title{Création d'une application de tests de non-régression pour un SDK de reconnaissance de codes-barres}
+\title{Réalisation d'une application de tests de non-régression pour un moteur de reconnaissance de codes-barres}
 
 \lstset{
 language=Java,
 numbers=left,
 breaklines=true
 }
+
+\titleformat{\chapter}[display]{\sf\bfseries\Huge} {\vspace{-10ex} \large\MakeUppercase{Partie}~\large\thechapter} {2ex}{\titlerule\vspace{1ex}\filright}
+
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{%
+\markboth{\thechapter.\ #1}{}}
+\lhead{\leftmark}
+\chead{}
+\rhead{}
 
 \setcounter{tocdepth}{1}
 
@@ -27,6 +38,7 @@ breaklines=true
 \maketitle
 
 \include{merci}
+
 
 \tableofcontents
 \listoffigures
@@ -42,9 +54,14 @@ breaklines=true
 \include{glossaire}
 
 \appendix
+\titleformat{\chapter}[display]{\sf\bfseries\Huge} {\vspace{-10ex} \large\MakeUppercase{Annexe}~\large\thechapter} {2ex}{\titlerule\vspace{1ex}\filright}
 \part*{Annexes à l'application de tests de non-régression}
 \include{annexeProjet1}
 \part*{Annexes au lecteur virtuel de codes-barres}
 \include{annexeProjet2}
+
+\backmatter
+\include{resume}
+\include{abstract}
 
 \end{document}

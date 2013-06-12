@@ -39,7 +39,21 @@ On peut voir dans la figure \ref{systrayMenu} le menu de l'application :
 
 Une fonctionnalité intéressante du lecteur virtuel est de pouvoir définir une application vers laquelle seront redirigés les résultats des détections. Cela permet par exemple de remplir rapidement des formulaires en limitant le nombre de clics. Dans ce cas, je fais en sorte que le résultat soit envoyé à la fenêtre comme s'il avait été tapé au clavier.
 
-[CODE]
+On commence par récupérer un identifiant unique, appelé \og handle \fg{} associé à la fenêtre voulue :
+
+\verb|int iHandle = NativeWin32.FindWindow(null, selectedWindow);|
+
+Cette fonction est un portage d'une fonction bas niveau. Pour plus de détails concernant le portage de fonctions Win32, voir l'annexe \ref{hook}. Le premier paramètre de cette fonction n'est pas utile et doit être passé à \verb|null|. Le second paramètre est le nom de la fenêtre, récupéré plus tôt avec une autre fonction bas niveau listant toutes les fenêtres ouvertes.
+
+On passe la fenêtre au premier plan afin qu'elle soit activée et puisse être prête à recevoir le message :
+
+\verb|NativeWin32.SetForegroundWindow(iHandle);|
+
+Enfin, on envoie le message à l'aide d'une méthode existante dans le framework .NET :
+
+\verb|System.Windows.Forms.SendKeys.SendWait(barcode);|
+
+Ainsi on peut voir apparaître les caractères dans un champ de saisie de la fenêtre, si bien sûr un champ avait été préalablement sélectionné. Le fait amusant est que les caractères apparaissent un à un, comme si quelqu'un les avait tapés très rapidement.
 
 \subsection{Gérer les intéractions pendant la détection}
 
@@ -53,7 +67,7 @@ Comme vous pouvez le constater dans la figure \ref{detectionRing}, le double-cli
 \label{detectionRing}
 \end{figure}
 
-Grâce à des mécanismes avancés décris dans l'annexe \ref{detectionImage}, je peux récupérer certains événements utilisateurs comme le mouvement de la souris qui va provoquer le déplacement de la fenêtre de sorte que le curseur reste toujours au centre du cercle. Je vais aussi intercepter des événements plus complexes comme l'appui simultané des touches CTRL et MAJ et de la rotation de la molette de la souris. Cette action va permettre de faire varier la taille du cercle et donc la surface de détection. Je vais enfin intercepter tous les clics afin de m'assurer que le cercle reste en permanence au premier plan, sans quoi il serait vite perdu de vue derrière les autres fenêtres, sans possibilité de le ramener à l'avant-plan car la fenêtre ne possède pas d'icône dans la barre de tâche.
+Grâce à des mécanismes avancés décrits dans l'annexe \ref{hook}, je peux récupérer certains événements utilisateurs comme le mouvement de la souris qui va provoquer le déplacement de la fenêtre de sorte que le curseur reste toujours au centre du cercle. Je vais aussi intercepter des événements plus complexes comme l'appui simultané des touches CTRL et MAJ et de la rotation de la molette de la souris. Cette action va permettre de faire varier la taille du cercle et donc la surface de détection. Je vais enfin intercepter tous les clics afin de m'assurer que le cercle reste en permanence au premier plan, sans quoi il serait vite perdu de vue derrière les autres fenêtres, sans possibilité de le ramener à l'avant-plan car la fenêtre ne possède pas d'icône dans la barre de tâche.
 
 Le principe de la détection est de lancer à intervalle régulier une analyse de la zone survolée par le cercle de détection. Cette analyse consiste à capturer la zone de l'écran, à l'enregistrer dans une image en mémoire et à soumettre cette image à GdPicture en suivant le même principe que dans le premier projet que j'ai réalisé. Le choix des fonctions de détection à utiliser se fait cette fois-ci à l'aide des informations saisies par l'utilisateur dans la section \og Plus d'options \fg{}. En plus de la valeur du code-barres, je récupère son type afin de filtrer, toujours suivant les mêmes paramètres\footnote{En plus des types de détection habituels (DataMatrix, QRcode, etc.), il existe plusieurs familles de codes-barres 1D qui sont connues de GdPicture et qui peuvent être filtrées}.
 
@@ -78,6 +92,6 @@ Une fois qu'un code-barres est détecté, les actions automatiques se lancent si
 
 Ce second projet a été pour moi l'occasion d'approfondir mes connaissances dans les technologies que j'avais découvertes lors de mon premier projet. J'ai pu en effet mesurer mes progrès en relisant les premières lignes que j'avais écrites au début de mon stage, certaines me laissant dubitatif quant à leur qualité.
 
-La réalisation de cete application m'a également permise de sortir du sujet initial de mon stage. J'ai pu me concentrer sur un sujet très différent, mais tout aussi intéressant. Malgré les longs moments passés à rechercher de la documentation sur certains mécanismes complexes, je garde le souvenir d'une application que je me suis amusé à créer.
+La réalisation de cette application m'a également permis de sortir du sujet initial de mon stage. J'ai pu me concentrer sur un sujet très différent, mais tout aussi intéressant. Malgré les longs moments passés à rechercher de la documentation sur certains mécanismes complexes, je garde le souvenir d'une application que je me suis amusé à créer.
 
 Enfin, le lecteur de codes-barres virtuel est à destination du grand public, contrairement à l'application de tests. J'ai apprécié la volonté d'ORPALIS de supporter ce projet en le distribuant sur son site web sous le nom \og ORPALIS Virtual Barcode Reader \fg{} tout en laissant mon nom sur le produit.

@@ -9,7 +9,15 @@ Le Framework .NET fonctionne en code dit \og managé \fg{}, c'est à dire que le
 
 L'API Win32 ne fonctionne pas en code managé, et cela pose une limite majeure de conception avec .NET. Toutefois, des outils existent pour appeler des fonctions Win32 dans du code C\#. L'un de ces outils que j'ai pu utiliser est P/Invoke. Il permet d'inclure une DLL système contenant du code non-managé et d'assurer l'interface avec le code managé. Voici un exemple d'utilisation :
 
-[CODE]
+\pagebreak
+\begin{lstlisting}
+[DllImport("user32.dll")]
+public static extern int SetForegroundWindow(
+	int hWnd // handle to window
+);
+\end{lstlisting}
+
+On peut voir ici la DLL \og user32.dll \fg{} qui est importée, et la fonction \verb|SetForegroundWindow| qui est portée. La difficulté de l'opération est de trouver les types de paramètres C\# correspondant aux types non-managés de l'API Win32.
 
 Je me suis rendu compte au fil de mes recherches que le seul moyen d'intercepter un événement souris ou clavier à l'extérieur d'une fenêtre était de mettre en place un mécanisme bas niveau appelé \og Hook \fg{}. Un hook (crochet) permet de surveiller les messages transitant des périphériques au système et de les faire bifurquer par l'application. L'application peut surveiller ces messages et soit les laisser passer soit les traiter tout en prenant soin de les relâcher dans leur direction initiale. Comme dit précédemment, le hook est un mécanisme de bas niveau qui se trouve dans une DLL Win32. C'est là que P/Invoke entre en jeu.
 
